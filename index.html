@@ -1,0 +1,1594 @@
+<html>
+<head>
+<title>Hierarchical Edge Bundling</title>
+<style type="text/css">
+   .node
+        {
+            font: 300 11px "Helvetica Neue" , Helvetica, Arial, sans-serif;
+            fill: #bbb;
+        }
+        
+        .node:hover
+        {
+            fill: #000;
+        }
+        
+        .link
+        {
+            stroke: steelblue;
+            stroke-opacity: .4;
+            fill: none;
+            pointer-events: none;
+        }
+        
+        .node:hover, .node--source, .node--target
+        {
+            font-weight: 700;
+        }
+        
+        .node--source
+        {
+            fill: #d62728;
+        }
+        
+        .node--target
+        {
+            fill: #2ca02c;
+        }
+        
+        .link--source, .link--target
+        {
+            stroke-opacity: 1;
+            stroke-width: 2px;
+        }
+        
+        .link--source
+        {
+            stroke: #2ca02c;
+        }
+        
+        .link--target
+        {
+            stroke: #d62728;
+        }
+</style>
+</head>
+<body>
+ <div id="chart" style="overflow:scroll">
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" ></script>
+<script>
+     var flaredata=[
+    {
+        "name": "webmetro.com",
+        "imports": [
+            "insider.webmetro.com",
+            "webmetro.com/careers",
+            "webmetro.com/contact",
+            "webmetro.com/contact/events",
+            "webmetro.com/contact/events.html",
+            "webmetro.com/contact/request-consultation",
+            "webmetro.com/contact/request-consultation.html",
+            "webmetro.com/contact-us.html",
+            "webmetro.com/internet-marketing",
+            "webmetro.com/internet-marketing/online-media",
+            "webmetro.com/internet-marketing/online-media/affiliate-marketing",
+            "webmetro.com/internet-marketing/online-media/display-advertising",
+            "webmetro.com/internet-marketing/online-media/email-marketing",
+            "webmetro.com/internet-marketing/online-media/social-advertising",
+            "webmetro.com/internet-marketing/online-media/video-marketing",
+            "webmetro.com/internet-marketing/search-marketing",
+            "webmetro.com/internet-marketing/search-marketing/comparison-search",
+            "webmetro.com/internet-marketing/search-marketing/content-marketing",
+            "webmetro.com/internet-marketing/search-marketing/mobile-search",
+            "webmetro.com/internet-marketing/search-marketing/pay-per-click-ppc",
+            "webmetro.com/internet-marketing/search-marketing/seo",
+            "webmetro.com/internet-marketing/user-engagement",
+            "webmetro.com/internet-marketing/user-engagement/conversion-rate-optimization",
+            "webmetro.com/internet-marketing/user-engagement/landing-page-optimization",
+            "webmetro.com/internet-marketing/user-engagement/prospect-cultivation",
+            "webmetro.com/internet-marketing/user-engagement/social-media-marketing",
+            "webmetro.com/internet-marketing/user-engagement/website-design",
+            "webmetro.com/our-work",
+            "webmetro.com/our-work/case-studies",
+            "webmetro.com/our-work/clients",
+            "webmetro.com/our-work/clients/testimonials",
+            "webmetro.com/our-work/insights",
+            "webmetro.com/our-work/insights/povs",
+            "webmetro.com/our-work/insights/tips-and-advice",
+            "webmetro.com/our-work/insights/white-papers",
+            "webmetro.com/privacypolicy.html",
+            "webmetro.com/who-we-are",
+            "webmetro.com/who-we-are/accreditations",
+            "webmetro.com/who-we-are/accreditations.html",
+            "webmetro.com/who-we-are/careers",
+            "webmetro.com/who-we-are/leadership",
+            "webmetro.com/who-we-are/leadership.html",
+            "webmetro.com/who-we-are/press-releases"
+        ]
+    },
+    {
+        "name": "webmetro.com/about.htm",
+        "imports": [
+            "webmetro.com/who-we-are"
+        ]
+    },
+    {
+        "name": "webmetro.com/blog",
+        "imports": [
+            "webmetro.com/our-work/insights"
+        ]
+    },
+    {
+        "name": "webmetro.com/contact/events.html",
+        "imports": [
+            "webmetro.com",
+            "webmetro.com/contact",
+            "webmetro.com/contact/events",
+            "webmetro.com/contact/request-consultation",
+            "webmetro.com/contact/request-consultation.html",
+            "webmetro.com/contact-us.html",
+            "webmetro.com/index",
+            "webmetro.com/internet-marketing",
+            "webmetro.com/internet-marketing/online-media",
+            "webmetro.com/internet-marketing/online-media/affiliate-marketing",
+            "webmetro.com/internet-marketing/online-media/display-advertising",
+            "webmetro.com/internet-marketing/online-media/email-marketing",
+            "webmetro.com/internet-marketing/online-media/social-advertising",
+            "webmetro.com/internet-marketing/online-media/video-marketing",
+            "webmetro.com/internet-marketing/search-marketing",
+            "webmetro.com/internet-marketing/search-marketing/comparison-search",
+            "webmetro.com/internet-marketing/search-marketing/content-marketing",
+            "webmetro.com/internet-marketing/search-marketing/mobile-search",
+            "webmetro.com/internet-marketing/search-marketing/pay-per-click-ppc",
+            "webmetro.com/internet-marketing/search-marketing/seo",
+            "webmetro.com/internet-marketing/user-engagement",
+            "webmetro.com/internet-marketing/user-engagement/conversion-rate-optimization",
+            "webmetro.com/internet-marketing/user-engagement/landing-page-optimization",
+            "webmetro.com/internet-marketing/user-engagement/prospect-cultivation",
+            "webmetro.com/internet-marketing/user-engagement/social-media-marketing",
+            "webmetro.com/internet-marketing/user-engagement/website-design",
+            "webmetro.com/our-work",
+            "webmetro.com/our-work/case-studies",
+            "webmetro.com/our-work/clients",
+            "webmetro.com/our-work/clients/testimonials",
+            "webmetro.com/our-work/insights",
+            "webmetro.com/our-work/insights/povs",
+            "webmetro.com/our-work/insights/tips-and-advice",
+            "webmetro.com/our-work/insights/white-papers",
+            "webmetro.com/privacypolicy.html",
+            "webmetro.com/who-we-are",
+            "webmetro.com/who-we-are/accreditations",
+            "webmetro.com/who-we-are/accreditations.html",
+            "webmetro.com/who-we-are/careers",
+            "webmetro.com/who-we-are/leadership",
+            "webmetro.com/who-we-are/leadership.html",
+            "webmetro.com/who-we-are/press-releases"
+        ]
+    },
+    {
+        "name": "webmetro.com/contact/request-consultation",
+        "imports": [
+            "webmetro.com",
+            "webmetro.com/contact",
+            "webmetro.com/contact/events",
+            "webmetro.com/contact/events.html",
+            "webmetro.com/contact/request-consultation.html",
+            "webmetro.com/contact-us.html",
+            "webmetro.com/index",
+            "webmetro.com/internet-marketing",
+            "webmetro.com/internet-marketing/online-media",
+            "webmetro.com/internet-marketing/online-media/affiliate-marketing",
+            "webmetro.com/internet-marketing/online-media/display-advertising",
+            "webmetro.com/internet-marketing/online-media/email-marketing",
+            "webmetro.com/internet-marketing/online-media/social-advertising",
+            "webmetro.com/internet-marketing/online-media/video-marketing",
+            "webmetro.com/internet-marketing/search-marketing",
+            "webmetro.com/internet-marketing/search-marketing/comparison-search",
+            "webmetro.com/internet-marketing/search-marketing/content-marketing",
+            "webmetro.com/internet-marketing/search-marketing/mobile-search",
+            "webmetro.com/internet-marketing/search-marketing/pay-per-click-ppc",
+            "webmetro.com/internet-marketing/search-marketing/seo",
+            "webmetro.com/internet-marketing/user-engagement",
+            "webmetro.com/internet-marketing/user-engagement/conversion-rate-optimization",
+            "webmetro.com/internet-marketing/user-engagement/landing-page-optimization",
+            "webmetro.com/internet-marketing/user-engagement/prospect-cultivation",
+            "webmetro.com/internet-marketing/user-engagement/social-media-marketing",
+            "webmetro.com/internet-marketing/user-engagement/website-design",
+            "webmetro.com/our-work",
+            "webmetro.com/our-work/case-studies",
+            "webmetro.com/our-work/clients",
+            "webmetro.com/our-work/clients/testimonials",
+            "webmetro.com/our-work/insights",
+            "webmetro.com/our-work/insights/povs",
+            "webmetro.com/our-work/insights/tips-and-advice",
+            "webmetro.com/our-work/insights/white-papers",
+            "webmetro.com/privacypolicy.html",
+            "webmetro.com/who-we-are",
+            "webmetro.com/who-we-are/accreditations",
+            "webmetro.com/who-we-are/accreditations.html",
+            "webmetro.com/who-we-are/careers",
+            "webmetro.com/who-we-are/leadership",
+            "webmetro.com/who-we-are/leadership.html",
+            "webmetro.com/who-we-are/press-releases"
+        ]
+    },
+    {
+        "name": "webmetro.com/content-advertising",
+        "imports": [
+            "webmetro.com/internet-marketing/online-media/display-advertising.html"
+        ]
+    },
+    {
+        "name": "webmetro.com/internet-marketing",
+        "imports": [
+            "webmetro.com",
+            "webmetro.com/brochure",
+            "webmetro.com/contact",
+            "webmetro.com/contact/events",
+            "webmetro.com/contact/events.html",
+            "webmetro.com/contact/request-consultation",
+            "webmetro.com/contact/request-consultation.html",
+            "webmetro.com/contact-us.html",
+            "webmetro.com/index",
+            "webmetro.com/internet-marketing/dsmm-methodology",
+            "webmetro.com/internet-marketing/online-media",
+            "webmetro.com/internet-marketing/online-media/affiliate-marketing",
+            "webmetro.com/internet-marketing/online-media/display-advertising",
+            "webmetro.com/internet-marketing/online-media/email-marketing",
+            "webmetro.com/internet-marketing/online-media/social-advertising",
+            "webmetro.com/internet-marketing/online-media/video-marketing",
+            "webmetro.com/internet-marketing/search-marketing",
+            "webmetro.com/internet-marketing/search-marketing/comparison-search",
+            "webmetro.com/internet-marketing/search-marketing/content-marketing",
+            "webmetro.com/internet-marketing/search-marketing/mobile-search",
+            "webmetro.com/internet-marketing/search-marketing/pay-per-click-ppc",
+            "webmetro.com/internet-marketing/search-marketing/seo",
+            "webmetro.com/internet-marketing/user-engagement",
+            "webmetro.com/internet-marketing/user-engagement/conversion-rate-optimization",
+            "webmetro.com/internet-marketing/user-engagement/landing-page-optimization",
+            "webmetro.com/internet-marketing/user-engagement/prospect-cultivation",
+            "webmetro.com/internet-marketing/user-engagement/social-media-marketing",
+            "webmetro.com/internet-marketing/user-engagement/website-design",
+            "webmetro.com/our-work",
+            "webmetro.com/our-work/case-studies",
+            "webmetro.com/our-work/clients",
+            "webmetro.com/our-work/clients/testimonials",
+            "webmetro.com/our-work/insights",
+            "webmetro.com/our-work/insights/povs",
+            "webmetro.com/our-work/insights/tips-and-advice",
+            "webmetro.com/our-work/insights/white-papers",
+            "webmetro.com/privacypolicy.html",
+            "webmetro.com/who-we-are",
+            "webmetro.com/who-we-are/accreditations",
+            "webmetro.com/who-we-are/accreditations.html",
+            "webmetro.com/who-we-are/careers",
+            "webmetro.com/who-we-are/leadership",
+            "webmetro.com/who-we-are/leadership.html",
+            "webmetro.com/who-we-are/press-releases"
+        ]
+    },
+    {
+        "name": "webmetro.com/internet-marketing/online-media",
+        "imports": [
+            "webmetro.com",
+            "webmetro.com/contact",
+            "webmetro.com/contact/events",
+            "webmetro.com/contact/events.html",
+            "webmetro.com/contact/request-consultation",
+            "webmetro.com/contact/request-consultation.html",
+            "webmetro.com/contact-us.html",
+            "webmetro.com/index",
+            "webmetro.com/internet-marketing",
+            "webmetro.com/internet-marketing/online-media/affiliate-marketing",
+            "webmetro.com/internet-marketing/online-media/affiliate-marketing.html",
+            "webmetro.com/internet-marketing/online-media/display-advertising",
+            "webmetro.com/internet-marketing/online-media/display-advertising.html",
+            "webmetro.com/internet-marketing/online-media/email-marketing",
+            "webmetro.com/internet-marketing/online-media/email-marketing.html",
+            "webmetro.com/internet-marketing/online-media/social-advertising",
+            "webmetro.com/internet-marketing/online-media/social-advertising.html",
+            "webmetro.com/internet-marketing/online-media/video-marketing",
+            "webmetro.com/internet-marketing/online-media/video-marketing.html",
+            "webmetro.com/internet-marketing/search-marketing",
+            "webmetro.com/internet-marketing/search-marketing/comparison-search",
+            "webmetro.com/internet-marketing/search-marketing/content-marketing",
+            "webmetro.com/internet-marketing/search-marketing/mobile-search",
+            "webmetro.com/internet-marketing/search-marketing/pay-per-click-ppc",
+            "webmetro.com/internet-marketing/search-marketing/seo",
+            "webmetro.com/internet-marketing/user-engagement",
+            "webmetro.com/internet-marketing/user-engagement/conversion-rate-optimization",
+            "webmetro.com/internet-marketing/user-engagement/landing-page-optimization",
+            "webmetro.com/internet-marketing/user-engagement/prospect-cultivation",
+            "webmetro.com/internet-marketing/user-engagement/social-media-marketing",
+            "webmetro.com/internet-marketing/user-engagement/website-design",
+            "webmetro.com/our-work",
+            "webmetro.com/our-work/case-studies",
+            "webmetro.com/our-work/clients",
+            "webmetro.com/our-work/clients/testimonials",
+            "webmetro.com/our-work/insights",
+            "webmetro.com/our-work/insights/povs",
+            "webmetro.com/our-work/insights/tips-and-advice",
+            "webmetro.com/our-work/insights/white-papers",
+            "webmetro.com/privacypolicy.html",
+            "webmetro.com/who-we-are",
+            "webmetro.com/who-we-are/accreditations",
+            "webmetro.com/who-we-are/accreditations.html",
+            "webmetro.com/who-we-are/careers",
+            "webmetro.com/who-we-are/leadership",
+            "webmetro.com/who-we-are/leadership.html",
+            "webmetro.com/who-we-are/press-releases"
+        ]
+    },
+    {
+        "name": "webmetro.com/internet-marketing/online-media/affiliate-marketing.html",
+        "imports": [
+            "webmetro.com",
+            "webmetro.com/contact",
+            "webmetro.com/contact/events",
+            "webmetro.com/contact/events.html",
+            "webmetro.com/contact/request-consultation",
+            "webmetro.com/contact/request-consultation.html",
+            "webmetro.com/contact-us.html",
+            "webmetro.com/index",
+            "webmetro.com/internet-marketing",
+            "webmetro.com/internet-marketing/online-media",
+            "webmetro.com/internet-marketing/online-media/affiliate-marketing",
+            "webmetro.com/internet-marketing/online-media/display-advertising",
+            "webmetro.com/internet-marketing/online-media/email-marketing",
+            "webmetro.com/internet-marketing/online-media/social-advertising",
+            "webmetro.com/internet-marketing/online-media/video-marketing",
+            "webmetro.com/internet-marketing/search-marketing",
+            "webmetro.com/internet-marketing/search-marketing/comparison-search",
+            "webmetro.com/internet-marketing/search-marketing/content-marketing",
+            "webmetro.com/internet-marketing/search-marketing/mobile-search",
+            "webmetro.com/internet-marketing/search-marketing/pay-per-click-ppc",
+            "webmetro.com/internet-marketing/search-marketing/seo",
+            "webmetro.com/internet-marketing/user-engagement",
+            "webmetro.com/internet-marketing/user-engagement/conversion-rate-optimization",
+            "webmetro.com/internet-marketing/user-engagement/landing-page-optimization",
+            "webmetro.com/internet-marketing/user-engagement/prospect-cultivation",
+            "webmetro.com/internet-marketing/user-engagement/social-media-marketing",
+            "webmetro.com/internet-marketing/user-engagement/website-design",
+            "webmetro.com/our-work",
+            "webmetro.com/our-work/case-studies",
+            "webmetro.com/our-work/clients",
+            "webmetro.com/our-work/clients/testimonials",
+            "webmetro.com/our-work/insights",
+            "webmetro.com/our-work/insights/povs",
+            "webmetro.com/our-work/insights/tips-and-advice",
+            "webmetro.com/our-work/insights/white-papers",
+            "webmetro.com/privacypolicy.html",
+            "webmetro.com/who-we-are",
+            "webmetro.com/who-we-are/accreditations",
+            "webmetro.com/who-we-are/accreditations.html",
+            "webmetro.com/who-we-are/careers",
+            "webmetro.com/who-we-are/leadership",
+            "webmetro.com/who-we-are/leadership.html",
+            "webmetro.com/who-we-are/press-releases"
+        ]
+    },
+    {
+        "name": "webmetro.com/internet-marketing/online-media/display-advertising",
+        "imports": [
+            "webmetro.com",
+            "webmetro.com/contact",
+            "webmetro.com/contact/events",
+            "webmetro.com/contact/events.html",
+            "webmetro.com/contact/request-consultation",
+            "webmetro.com/contact/request-consultation.html",
+            "webmetro.com/contact-us.html",
+            "webmetro.com/index",
+            "webmetro.com/internet-marketing",
+            "webmetro.com/internet-marketing/online-media",
+            "webmetro.com/internet-marketing/online-media/affiliate-marketing",
+            "webmetro.com/internet-marketing/online-media/email-marketing",
+            "webmetro.com/internet-marketing/online-media/social-advertising",
+            "webmetro.com/internet-marketing/online-media/video-marketing",
+            "webmetro.com/internet-marketing/search-marketing",
+            "webmetro.com/internet-marketing/search-marketing/comparison-search",
+            "webmetro.com/internet-marketing/search-marketing/content-marketing",
+            "webmetro.com/internet-marketing/search-marketing/mobile-search",
+            "webmetro.com/internet-marketing/search-marketing/pay-per-click-ppc",
+            "webmetro.com/internet-marketing/search-marketing/seo",
+            "webmetro.com/internet-marketing/user-engagement",
+            "webmetro.com/internet-marketing/user-engagement/conversion-rate-optimization",
+            "webmetro.com/internet-marketing/user-engagement/landing-page-optimization",
+            "webmetro.com/internet-marketing/user-engagement/prospect-cultivation",
+            "webmetro.com/internet-marketing/user-engagement/social-media-marketing",
+            "webmetro.com/internet-marketing/user-engagement/website-design",
+            "webmetro.com/our-work",
+            "webmetro.com/our-work/case-studies",
+            "webmetro.com/our-work/clients",
+            "webmetro.com/our-work/clients/testimonials",
+            "webmetro.com/our-work/insights",
+            "webmetro.com/our-work/insights/povs",
+            "webmetro.com/our-work/insights/tips-and-advice",
+            "webmetro.com/our-work/insights/white-papers",
+            "webmetro.com/privacypolicy.html",
+            "webmetro.com/who-we-are",
+            "webmetro.com/who-we-are/accreditations",
+            "webmetro.com/who-we-are/accreditations.html",
+            "webmetro.com/who-we-are/careers",
+            "webmetro.com/who-we-are/leadership",
+            "webmetro.com/who-we-are/leadership.html",
+            "webmetro.com/who-we-are/press-releases"
+        ]
+    },
+    {
+        "name": "webmetro.com/internet-marketing/online-media/display-advertising.html",
+        "imports": [
+            "webmetro.com",
+            "webmetro.com/contact",
+            "webmetro.com/contact/events",
+            "webmetro.com/contact/events.html",
+            "webmetro.com/contact/request-consultation",
+            "webmetro.com/contact/request-consultation.html",
+            "webmetro.com/contact-us.html",
+            "webmetro.com/index",
+            "webmetro.com/internet-marketing",
+            "webmetro.com/internet-marketing/online-media",
+            "webmetro.com/internet-marketing/online-media/affiliate-marketing",
+            "webmetro.com/internet-marketing/online-media/display-advertising",
+            "webmetro.com/internet-marketing/online-media/email-marketing",
+            "webmetro.com/internet-marketing/online-media/social-advertising",
+            "webmetro.com/internet-marketing/online-media/video-marketing",
+            "webmetro.com/internet-marketing/search-marketing",
+            "webmetro.com/internet-marketing/search-marketing/comparison-search",
+            "webmetro.com/internet-marketing/search-marketing/content-marketing",
+            "webmetro.com/internet-marketing/search-marketing/mobile-search",
+            "webmetro.com/internet-marketing/search-marketing/pay-per-click-ppc",
+            "webmetro.com/internet-marketing/search-marketing/seo",
+            "webmetro.com/internet-marketing/user-engagement",
+            "webmetro.com/internet-marketing/user-engagement/conversion-rate-optimization",
+            "webmetro.com/internet-marketing/user-engagement/landing-page-optimization",
+            "webmetro.com/internet-marketing/user-engagement/prospect-cultivation",
+            "webmetro.com/internet-marketing/user-engagement/social-media-marketing",
+            "webmetro.com/internet-marketing/user-engagement/website-design",
+            "webmetro.com/our-work",
+            "webmetro.com/our-work/case-studies",
+            "webmetro.com/our-work/clients",
+            "webmetro.com/our-work/clients/testimonials",
+            "webmetro.com/our-work/insights",
+            "webmetro.com/our-work/insights/povs",
+            "webmetro.com/our-work/insights/tips-and-advice",
+            "webmetro.com/our-work/insights/white-papers",
+            "webmetro.com/privacypolicy.html",
+            "webmetro.com/who-we-are",
+            "webmetro.com/who-we-are/accreditations",
+            "webmetro.com/who-we-are/accreditations.html",
+            "webmetro.com/who-we-are/careers",
+            "webmetro.com/who-we-are/leadership",
+            "webmetro.com/who-we-are/leadership.html",
+            "webmetro.com/who-we-are/press-releases"
+        ]
+    },
+    {
+        "name": "webmetro.com/internet-marketing/online-media/video-marketing.html",
+        "imports": [
+            "webmetro.com",
+            "webmetro.com/contact",
+            "webmetro.com/contact/events",
+            "webmetro.com/contact/events.html",
+            "webmetro.com/contact/request-consultation",
+            "webmetro.com/contact/request-consultation.html",
+            "webmetro.com/contact-us.html",
+            "webmetro.com/index",
+            "webmetro.com/internet-marketing",
+            "webmetro.com/internet-marketing/online-media",
+            "webmetro.com/internet-marketing/online-media/affiliate-marketing",
+            "webmetro.com/internet-marketing/online-media/display-advertising",
+            "webmetro.com/internet-marketing/online-media/email-marketing",
+            "webmetro.com/internet-marketing/online-media/social-advertising",
+            "webmetro.com/internet-marketing/online-media/video-marketing",
+            "webmetro.com/internet-marketing/search-marketing",
+            "webmetro.com/internet-marketing/search-marketing/comparison-search",
+            "webmetro.com/internet-marketing/search-marketing/content-marketing",
+            "webmetro.com/internet-marketing/search-marketing/mobile-search",
+            "webmetro.com/internet-marketing/search-marketing/pay-per-click-ppc",
+            "webmetro.com/internet-marketing/search-marketing/seo",
+            "webmetro.com/internet-marketing/user-engagement",
+            "webmetro.com/internet-marketing/user-engagement/conversion-rate-optimization",
+            "webmetro.com/internet-marketing/user-engagement/landing-page-optimization",
+            "webmetro.com/internet-marketing/user-engagement/prospect-cultivation",
+            "webmetro.com/internet-marketing/user-engagement/social-media-marketing",
+            "webmetro.com/internet-marketing/user-engagement/website-design",
+            "webmetro.com/our-work",
+            "webmetro.com/our-work/case-studies",
+            "webmetro.com/our-work/clients",
+            "webmetro.com/our-work/clients/testimonials",
+            "webmetro.com/our-work/insights",
+            "webmetro.com/our-work/insights/povs",
+            "webmetro.com/our-work/insights/tips-and-advice",
+            "webmetro.com/our-work/insights/white-papers",
+            "webmetro.com/privacypolicy.html",
+            "webmetro.com/who-we-are",
+            "webmetro.com/who-we-are/accreditations",
+            "webmetro.com/who-we-are/accreditations.html",
+            "webmetro.com/who-we-are/careers",
+            "webmetro.com/who-we-are/leadership",
+            "webmetro.com/who-we-are/leadership.html",
+            "webmetro.com/who-we-are/press-releases"
+        ]
+    },
+    {
+        "name": "webmetro.com/internet-marketing/search-marketing",
+        "imports": [
+            "webmetro.com",
+            "webmetro.com/contact",
+            "webmetro.com/contact/events",
+            "webmetro.com/contact/events.html",
+            "webmetro.com/contact/request-consultation",
+            "webmetro.com/contact/request-consultation.html",
+            "webmetro.com/contact-us.html",
+            "webmetro.com/index",
+            "webmetro.com/internet-marketing",
+            "webmetro.com/internet-marketing/online-media",
+            "webmetro.com/internet-marketing/online-media/affiliate-marketing",
+            "webmetro.com/internet-marketing/online-media/display-advertising",
+            "webmetro.com/internet-marketing/online-media/email-marketing",
+            "webmetro.com/internet-marketing/online-media/social-advertising",
+            "webmetro.com/internet-marketing/online-media/video-marketing",
+            "webmetro.com/internet-marketing/search-marketing/comparison-search",
+            "webmetro.com/internet-marketing/search-marketing/comparison-search.html",
+            "webmetro.com/internet-marketing/search-marketing/content-marketing",
+            "webmetro.com/internet-marketing/search-marketing/content-marketing.html",
+            "webmetro.com/internet-marketing/search-marketing/mobile-search",
+            "webmetro.com/internet-marketing/search-marketing/mobile-search.html",
+            "webmetro.com/internet-marketing/search-marketing/pay-per-click-ppc",
+            "webmetro.com/internet-marketing/search-marketing/pay-per-click-ppc.html",
+            "webmetro.com/internet-marketing/search-marketing/seo",
+            "webmetro.com/internet-marketing/search-marketing/seo.html",
+            "webmetro.com/internet-marketing/user-engagement",
+            "webmetro.com/internet-marketing/user-engagement/conversion-rate-optimization",
+            "webmetro.com/internet-marketing/user-engagement/landing-page-optimization",
+            "webmetro.com/internet-marketing/user-engagement/prospect-cultivation",
+            "webmetro.com/internet-marketing/user-engagement/social-media-marketing",
+            "webmetro.com/internet-marketing/user-engagement/website-design",
+            "webmetro.com/our-work",
+            "webmetro.com/our-work/case-studies",
+            "webmetro.com/our-work/clients",
+            "webmetro.com/our-work/clients/testimonials",
+            "webmetro.com/our-work/insights",
+            "webmetro.com/our-work/insights/povs",
+            "webmetro.com/our-work/insights/tips-and-advice",
+            "webmetro.com/our-work/insights/white-papers",
+            "webmetro.com/privacypolicy.html",
+            "webmetro.com/who-we-are",
+            "webmetro.com/who-we-are/accreditations",
+            "webmetro.com/who-we-are/accreditations.html",
+            "webmetro.com/who-we-are/careers",
+            "webmetro.com/who-we-are/leadership",
+            "webmetro.com/who-we-are/leadership.html",
+            "webmetro.com/who-we-are/press-releases"
+        ]
+    },
+    {
+        "name": "webmetro.com/internet-marketing/search-marketing/pay-per-click-ppc",
+        "imports": [
+            "webmetro.com",
+            "webmetro.com/contact",
+            "webmetro.com/contact/events",
+            "webmetro.com/contact/events.html",
+            "webmetro.com/contact/request-consultation",
+            "webmetro.com/contact/request-consultation.html",
+            "webmetro.com/contact-us.html",
+            "webmetro.com/index",
+            "webmetro.com/internet-marketing",
+            "webmetro.com/internet-marketing/online-media",
+            "webmetro.com/internet-marketing/online-media/affiliate-marketing",
+            "webmetro.com/internet-marketing/online-media/display-advertising",
+            "webmetro.com/internet-marketing/online-media/email-marketing",
+            "webmetro.com/internet-marketing/online-media/social-advertising",
+            "webmetro.com/internet-marketing/online-media/video-marketing",
+            "webmetro.com/internet-marketing/search-marketing",
+            "webmetro.com/internet-marketing/search-marketing/comparison-search",
+            "webmetro.com/internet-marketing/search-marketing/content-marketing",
+            "webmetro.com/internet-marketing/search-marketing/mobile-search",
+            "webmetro.com/internet-marketing/search-marketing/seo",
+            "webmetro.com/internet-marketing/user-engagement",
+            "webmetro.com/internet-marketing/user-engagement/conversion-rate-optimization",
+            "webmetro.com/internet-marketing/user-engagement/landing-page-optimization",
+            "webmetro.com/internet-marketing/user-engagement/prospect-cultivation",
+            "webmetro.com/internet-marketing/user-engagement/social-media-marketing",
+            "webmetro.com/internet-marketing/user-engagement/website-design",
+            "webmetro.com/our-work",
+            "webmetro.com/our-work/case-studies",
+            "webmetro.com/our-work/clients",
+            "webmetro.com/our-work/clients/testimonials",
+            "webmetro.com/our-work/insights",
+            "webmetro.com/our-work/insights/povs",
+            "webmetro.com/our-work/insights/tips-and-advice",
+            "webmetro.com/our-work/insights/white-papers",
+            "webmetro.com/privacypolicy.html",
+            "webmetro.com/who-we-are",
+            "webmetro.com/who-we-are/accreditations",
+            "webmetro.com/who-we-are/accreditations.html",
+            "webmetro.com/who-we-are/careers",
+            "webmetro.com/who-we-are/leadership",
+            "webmetro.com/who-we-are/leadership.html",
+            "webmetro.com/who-we-are/press-releases"
+        ]
+    },
+    {
+        "name": "webmetro.com/internet-marketing/search-marketing/pay-per-click-ppc.html",
+        "imports": [
+            "webmetro.com",
+            "webmetro.com/contact",
+            "webmetro.com/contact/events",
+            "webmetro.com/contact/events.html",
+            "webmetro.com/contact/request-consultation",
+            "webmetro.com/contact/request-consultation.html",
+            "webmetro.com/contact-us.html",
+            "webmetro.com/index",
+            "webmetro.com/internet-marketing",
+            "webmetro.com/internet-marketing/online-media",
+            "webmetro.com/internet-marketing/online-media/affiliate-marketing",
+            "webmetro.com/internet-marketing/online-media/display-advertising",
+            "webmetro.com/internet-marketing/online-media/email-marketing",
+            "webmetro.com/internet-marketing/online-media/social-advertising",
+            "webmetro.com/internet-marketing/online-media/video-marketing",
+            "webmetro.com/internet-marketing/search-marketing",
+            "webmetro.com/internet-marketing/search-marketing/comparison-search",
+            "webmetro.com/internet-marketing/search-marketing/content-marketing",
+            "webmetro.com/internet-marketing/search-marketing/mobile-search",
+            "webmetro.com/internet-marketing/search-marketing/pay-per-click-ppc",
+            "webmetro.com/internet-marketing/search-marketing/seo",
+            "webmetro.com/internet-marketing/user-engagement",
+            "webmetro.com/internet-marketing/user-engagement/conversion-rate-optimization",
+            "webmetro.com/internet-marketing/user-engagement/landing-page-optimization",
+            "webmetro.com/internet-marketing/user-engagement/prospect-cultivation",
+            "webmetro.com/internet-marketing/user-engagement/social-media-marketing",
+            "webmetro.com/internet-marketing/user-engagement/website-design",
+            "webmetro.com/our-work",
+            "webmetro.com/our-work/case-studies",
+            "webmetro.com/our-work/clients",
+            "webmetro.com/our-work/clients/testimonials",
+            "webmetro.com/our-work/insights",
+            "webmetro.com/our-work/insights/povs",
+            "webmetro.com/our-work/insights/tips-and-advice",
+            "webmetro.com/our-work/insights/white-papers",
+            "webmetro.com/privacypolicy.html",
+            "webmetro.com/who-we-are",
+            "webmetro.com/who-we-are/accreditations",
+            "webmetro.com/who-we-are/accreditations.html",
+            "webmetro.com/who-we-are/careers",
+            "webmetro.com/who-we-are/leadership",
+            "webmetro.com/who-we-are/leadership.html",
+            "webmetro.com/who-we-are/press-releases"
+        ]
+    },
+    {
+        "name": "webmetro.com/internet-marketing/search-marketing/seo",
+        "imports": [
+            "webmetro.com",
+            "webmetro.com/contact",
+            "webmetro.com/contact/events",
+            "webmetro.com/contact/events.html",
+            "webmetro.com/contact/request-consultation",
+            "webmetro.com/contact/request-consultation.html",
+            "webmetro.com/contact-us.html",
+            "webmetro.com/index",
+            "webmetro.com/internet-marketing",
+            "webmetro.com/internet-marketing/online-media",
+            "webmetro.com/internet-marketing/online-media/affiliate-marketing",
+            "webmetro.com/internet-marketing/online-media/display-advertising",
+            "webmetro.com/internet-marketing/online-media/email-marketing",
+            "webmetro.com/internet-marketing/online-media/social-advertising",
+            "webmetro.com/internet-marketing/online-media/video-marketing",
+            "webmetro.com/internet-marketing/search-marketing",
+            "webmetro.com/internet-marketing/search-marketing/comparison-search",
+            "webmetro.com/internet-marketing/search-marketing/content-marketing",
+            "webmetro.com/internet-marketing/search-marketing/mobile-search",
+            "webmetro.com/internet-marketing/search-marketing/pay-per-click-ppc",
+            "webmetro.com/internet-marketing/user-engagement",
+            "webmetro.com/internet-marketing/user-engagement/conversion-rate-optimization",
+            "webmetro.com/internet-marketing/user-engagement/landing-page-optimization",
+            "webmetro.com/internet-marketing/user-engagement/prospect-cultivation",
+            "webmetro.com/internet-marketing/user-engagement/social-media-marketing",
+            "webmetro.com/internet-marketing/user-engagement/website-design",
+            "webmetro.com/our-work",
+            "webmetro.com/our-work/case-studies",
+            "webmetro.com/our-work/clients",
+            "webmetro.com/our-work/clients/testimonials",
+            "webmetro.com/our-work/insights",
+            "webmetro.com/our-work/insights/povs",
+            "webmetro.com/our-work/insights/tips-and-advice",
+            "webmetro.com/our-work/insights/white-papers",
+            "webmetro.com/privacypolicy.html",
+            "webmetro.com/who-we-are",
+            "webmetro.com/who-we-are/accreditations",
+            "webmetro.com/who-we-are/accreditations.html",
+            "webmetro.com/who-we-are/careers",
+            "webmetro.com/who-we-are/leadership",
+            "webmetro.com/who-we-are/leadership.html",
+            "webmetro.com/who-we-are/press-releases"
+        ]
+    },
+    {
+        "name": "webmetro.com/internet-marketing/search-marketing/seo.html",
+        "imports": [
+            "webmetro.com",
+            "webmetro.com/contact",
+            "webmetro.com/contact/events",
+            "webmetro.com/contact/events.html",
+            "webmetro.com/contact/request-consultation",
+            "webmetro.com/contact/request-consultation.html",
+            "webmetro.com/contact-us.html",
+            "webmetro.com/index",
+            "webmetro.com/internet-marketing",
+            "webmetro.com/internet-marketing/online-media",
+            "webmetro.com/internet-marketing/online-media/affiliate-marketing",
+            "webmetro.com/internet-marketing/online-media/display-advertising",
+            "webmetro.com/internet-marketing/online-media/email-marketing",
+            "webmetro.com/internet-marketing/online-media/social-advertising",
+            "webmetro.com/internet-marketing/online-media/video-marketing",
+            "webmetro.com/internet-marketing/search-marketing",
+            "webmetro.com/internet-marketing/search-marketing/comparison-search",
+            "webmetro.com/internet-marketing/search-marketing/content-marketing",
+            "webmetro.com/internet-marketing/search-marketing/mobile-search",
+            "webmetro.com/internet-marketing/search-marketing/pay-per-click-ppc",
+            "webmetro.com/internet-marketing/search-marketing/seo",
+            "webmetro.com/internet-marketing/user-engagement",
+            "webmetro.com/internet-marketing/user-engagement/conversion-rate-optimization",
+            "webmetro.com/internet-marketing/user-engagement/landing-page-optimization",
+            "webmetro.com/internet-marketing/user-engagement/prospect-cultivation",
+            "webmetro.com/internet-marketing/user-engagement/social-media-marketing",
+            "webmetro.com/internet-marketing/user-engagement/website-design",
+            "webmetro.com/our-work",
+            "webmetro.com/our-work/case-studies",
+            "webmetro.com/our-work/clients",
+            "webmetro.com/our-work/clients/testimonials",
+            "webmetro.com/our-work/insights",
+            "webmetro.com/our-work/insights/povs",
+            "webmetro.com/our-work/insights/tips-and-advice",
+            "webmetro.com/our-work/insights/white-papers",
+            "webmetro.com/privacypolicy.html",
+            "webmetro.com/who-we-are",
+            "webmetro.com/who-we-are/accreditations",
+            "webmetro.com/who-we-are/accreditations.html",
+            "webmetro.com/who-we-are/careers",
+            "webmetro.com/who-we-are/leadership",
+            "webmetro.com/who-we-are/leadership.html",
+            "webmetro.com/who-we-are/press-releases"
+        ]
+    },
+    {
+        "name": "webmetro.com/internet-marketing/user-engagement/website-design.html",
+        "imports": [
+            "webmetro.com",
+            "webmetro.com/contact",
+            "webmetro.com/contact/events",
+            "webmetro.com/contact/events.html",
+            "webmetro.com/contact/request-consultation",
+            "webmetro.com/contact/request-consultation.html",
+            "webmetro.com/contact-us.html",
+            "webmetro.com/index",
+            "webmetro.com/internet-marketing",
+            "webmetro.com/internet-marketing/online-media",
+            "webmetro.com/internet-marketing/online-media/affiliate-marketing",
+            "webmetro.com/internet-marketing/online-media/display-advertising",
+            "webmetro.com/internet-marketing/online-media/email-marketing",
+            "webmetro.com/internet-marketing/online-media/social-advertising",
+            "webmetro.com/internet-marketing/online-media/video-marketing",
+            "webmetro.com/internet-marketing/search-marketing",
+            "webmetro.com/internet-marketing/search-marketing/comparison-search",
+            "webmetro.com/internet-marketing/search-marketing/content-marketing",
+            "webmetro.com/internet-marketing/search-marketing/mobile-search",
+            "webmetro.com/internet-marketing/search-marketing/pay-per-click-ppc",
+            "webmetro.com/internet-marketing/search-marketing/seo",
+            "webmetro.com/internet-marketing/user-engagement",
+            "webmetro.com/internet-marketing/user-engagement/conversion-rate-optimization",
+            "webmetro.com/internet-marketing/user-engagement/landing-page-optimization",
+            "webmetro.com/internet-marketing/user-engagement/prospect-cultivation",
+            "webmetro.com/internet-marketing/user-engagement/social-media-marketing",
+            "webmetro.com/internet-marketing/user-engagement/website-design",
+            "webmetro.com/our-work",
+            "webmetro.com/our-work/case-studies",
+            "webmetro.com/our-work/clients",
+            "webmetro.com/our-work/clients/testimonials",
+            "webmetro.com/our-work/insights",
+            "webmetro.com/our-work/insights/povs",
+            "webmetro.com/our-work/insights/tips-and-advice",
+            "webmetro.com/our-work/insights/white-papers",
+            "webmetro.com/privacypolicy.html",
+            "webmetro.com/who-we-are",
+            "webmetro.com/who-we-are/accreditations",
+            "webmetro.com/who-we-are/accreditations.html",
+            "webmetro.com/who-we-are/careers",
+            "webmetro.com/who-we-are/leadership",
+            "webmetro.com/who-we-are/leadership.html",
+            "webmetro.com/who-we-are/press-releases"
+        ]
+    },
+    {
+        "name": "webmetro.com/Keyword_Rank.asp",
+        "imports": [
+            "webmetro.com/our-work/insights"
+        ]
+    },
+    {
+        "name": "webmetro.com/news1detail1.asp?id=1208",
+        "imports": [
+            "webmetro.com/our-work/insights"
+        ]
+    },
+    {
+        "name": "webmetro.com/our-work/case-studies",
+        "imports": [
+            "webmetro.com",
+            "webmetro.com/contact",
+            "webmetro.com/contact/events",
+            "webmetro.com/contact/events.html",
+            "webmetro.com/contact/request-consultation",
+            "webmetro.com/contact/request-consultation.html",
+            "webmetro.com/contact-us.html",
+            "webmetro.com/docs/case-studies/content-advertising-case-study.pdf?sfvrsn=4",
+            "webmetro.com/docs/case-studies/facebook-ppc-advertising-case-study.pdf?sfvrsn=4",
+            "webmetro.com/docs/case-studies/location-targeting-case-study.pdf?sfvrsn=8",
+            "webmetro.com/docs/case-studies/ppc-profit-optimization-case-study.pdf?sfvrsn=2",
+            "webmetro.com/docs/case-studies/seo-best-practices-case-study.pdf?sfvrsn=6",
+            "webmetro.com/docs/default-source/case-studies/home-security-store-webmetro-dynamic-remarketing.pdf?sfvrsn=7",
+            "webmetro.com/docs/default-source/case-studies/youtube-trueview-advertising-case-study.pdf?sfvrsn=2",
+            "webmetro.com/index",
+            "webmetro.com/internet-marketing",
+            "webmetro.com/internet-marketing/online-media",
+            "webmetro.com/internet-marketing/online-media/affiliate-marketing",
+            "webmetro.com/internet-marketing/online-media/display-advertising",
+            "webmetro.com/internet-marketing/online-media/email-marketing",
+            "webmetro.com/internet-marketing/online-media/social-advertising",
+            "webmetro.com/internet-marketing/online-media/video-marketing",
+            "webmetro.com/internet-marketing/search-marketing",
+            "webmetro.com/internet-marketing/search-marketing/comparison-search",
+            "webmetro.com/internet-marketing/search-marketing/content-marketing",
+            "webmetro.com/internet-marketing/search-marketing/mobile-search",
+            "webmetro.com/internet-marketing/search-marketing/pay-per-click-ppc",
+            "webmetro.com/internet-marketing/search-marketing/seo",
+            "webmetro.com/internet-marketing/user-engagement",
+            "webmetro.com/internet-marketing/user-engagement/conversion-rate-optimization",
+            "webmetro.com/internet-marketing/user-engagement/landing-page-optimization",
+            "webmetro.com/internet-marketing/user-engagement/prospect-cultivation",
+            "webmetro.com/internet-marketing/user-engagement/social-media-marketing",
+            "webmetro.com/internet-marketing/user-engagement/website-design",
+            "webmetro.com/our-work",
+            "webmetro.com/our-work/clients",
+            "webmetro.com/our-work/clients/testimonials",
+            "webmetro.com/our-work/insights",
+            "webmetro.com/our-work/insights/povs",
+            "webmetro.com/our-work/insights/tips-and-advice",
+            "webmetro.com/our-work/insights/white-papers",
+            "webmetro.com/privacypolicy.html",
+            "webmetro.com/who-we-are",
+            "webmetro.com/who-we-are/accreditations",
+            "webmetro.com/who-we-are/accreditations.html",
+            "webmetro.com/who-we-are/careers",
+            "webmetro.com/who-we-are/leadership",
+            "webmetro.com/who-we-are/leadership.html",
+            "webmetro.com/who-we-are/press-releases"
+        ]
+    },
+    {
+        "name": "webmetro.com/our-work/insights",
+        "imports": [
+            "webmetro.com",
+            "webmetro.com/contact",
+            "webmetro.com/contact/events",
+            "webmetro.com/contact/events.html",
+            "webmetro.com/contact/request-consultation",
+            "webmetro.com/contact/request-consultation.html",
+            "webmetro.com/contact-us.html",
+            "webmetro.com/index",
+            "webmetro.com/internet-marketing",
+            "webmetro.com/internet-marketing/online-media",
+            "webmetro.com/internet-marketing/online-media/affiliate-marketing",
+            "webmetro.com/internet-marketing/online-media/display-advertising",
+            "webmetro.com/internet-marketing/online-media/email-marketing",
+            "webmetro.com/internet-marketing/online-media/social-advertising",
+            "webmetro.com/internet-marketing/online-media/video-marketing",
+            "webmetro.com/internet-marketing/search-marketing",
+            "webmetro.com/internet-marketing/search-marketing/comparison-search",
+            "webmetro.com/internet-marketing/search-marketing/content-marketing",
+            "webmetro.com/internet-marketing/search-marketing/mobile-search",
+            "webmetro.com/internet-marketing/search-marketing/pay-per-click-ppc",
+            "webmetro.com/internet-marketing/search-marketing/seo",
+            "webmetro.com/internet-marketing/user-engagement",
+            "webmetro.com/internet-marketing/user-engagement/conversion-rate-optimization",
+            "webmetro.com/internet-marketing/user-engagement/landing-page-optimization",
+            "webmetro.com/internet-marketing/user-engagement/prospect-cultivation",
+            "webmetro.com/internet-marketing/user-engagement/social-media-marketing",
+            "webmetro.com/internet-marketing/user-engagement/website-design",
+            "webmetro.com/our-work",
+            "webmetro.com/our-work/case-studies",
+            "webmetro.com/our-work/clients",
+            "webmetro.com/our-work/clients/testimonials",
+            "webmetro.com/our-work/insights/povs",
+            "webmetro.com/our-work/insights/tips-and-advice",
+            "webmetro.com/our-work/insights/white-papers",
+            "webmetro.com/privacypolicy.html",
+            "webmetro.com/who-we-are",
+            "webmetro.com/who-we-are/accreditations",
+            "webmetro.com/who-we-are/accreditations.html",
+            "webmetro.com/who-we-are/careers",
+            "webmetro.com/who-we-are/leadership",
+            "webmetro.com/who-we-are/leadership.html",
+            "webmetro.com/who-we-are/press-releases"
+        ]
+    },
+    {
+        "name": "webmetro.com/our-work/insights/povs/2008/01/16/ppc-strategy",
+        "imports": [
+            "webmetro.com",
+            "webmetro.com/contact",
+            "webmetro.com/contact/events",
+            "webmetro.com/contact/events.html",
+            "webmetro.com/contact/request-consultation",
+            "webmetro.com/contact/request-consultation.html",
+            "webmetro.com/contact-us.html",
+            "webmetro.com/index",
+            "webmetro.com/internet-marketing",
+            "webmetro.com/internet-marketing/online-media",
+            "webmetro.com/internet-marketing/online-media/affiliate-marketing",
+            "webmetro.com/internet-marketing/online-media/display-advertising",
+            "webmetro.com/internet-marketing/online-media/email-marketing",
+            "webmetro.com/internet-marketing/online-media/social-advertising",
+            "webmetro.com/internet-marketing/online-media/video-marketing",
+            "webmetro.com/internet-marketing/search-marketing",
+            "webmetro.com/internet-marketing/search-marketing/comparison-search",
+            "webmetro.com/internet-marketing/search-marketing/content-marketing",
+            "webmetro.com/internet-marketing/search-marketing/mobile-search",
+            "webmetro.com/internet-marketing/search-marketing/pay-per-click-ppc",
+            "webmetro.com/internet-marketing/search-marketing/seo",
+            "webmetro.com/internet-marketing/user-engagement",
+            "webmetro.com/internet-marketing/user-engagement/conversion-rate-optimization",
+            "webmetro.com/internet-marketing/user-engagement/landing-page-optimization",
+            "webmetro.com/internet-marketing/user-engagement/prospect-cultivation",
+            "webmetro.com/internet-marketing/user-engagement/social-media-marketing",
+            "webmetro.com/internet-marketing/user-engagement/website-design",
+            "webmetro.com/our-work",
+            "webmetro.com/our-work/case-studies",
+            "webmetro.com/our-work/clients",
+            "webmetro.com/our-work/clients/testimonials",
+            "webmetro.com/our-work/insights",
+            "webmetro.com/our-work/insights/povs",
+            "webmetro.com/our-work/insights/tips-and-advice",
+            "webmetro.com/our-work/insights/white-papers",
+            "webmetro.com/privacypolicy.html",
+            "webmetro.com/who-we-are",
+            "webmetro.com/who-we-are/accreditations",
+            "webmetro.com/who-we-are/accreditations.html",
+            "webmetro.com/who-we-are/careers",
+            "webmetro.com/who-we-are/leadership",
+            "webmetro.com/who-we-are/leadership.html",
+            "webmetro.com/who-we-are/press-releases"
+        ]
+    },
+    {
+        "name": "webmetro.com/our-work/insights/tips-and-advice/2008/05/12/is-your-website-seo-ready",
+        "imports": [
+            "webmetro.com",
+            "webmetro.com/contact",
+            "webmetro.com/contact/events",
+            "webmetro.com/contact/events.html",
+            "webmetro.com/contact/request-consultation",
+            "webmetro.com/contact/request-consultation.html",
+            "webmetro.com/contact-us.html",
+            "webmetro.com/index",
+            "webmetro.com/internet-marketing",
+            "webmetro.com/internet-marketing/online-media",
+            "webmetro.com/internet-marketing/online-media/affiliate-marketing",
+            "webmetro.com/internet-marketing/online-media/display-advertising",
+            "webmetro.com/internet-marketing/online-media/email-marketing",
+            "webmetro.com/internet-marketing/online-media/social-advertising",
+            "webmetro.com/internet-marketing/online-media/video-marketing",
+            "webmetro.com/internet-marketing/search-marketing",
+            "webmetro.com/internet-marketing/search-marketing/comparison-search",
+            "webmetro.com/internet-marketing/search-marketing/content-marketing",
+            "webmetro.com/internet-marketing/search-marketing/mobile-search",
+            "webmetro.com/internet-marketing/search-marketing/pay-per-click-ppc",
+            "webmetro.com/internet-marketing/search-marketing/seo",
+            "webmetro.com/internet-marketing/user-engagement",
+            "webmetro.com/internet-marketing/user-engagement/conversion-rate-optimization",
+            "webmetro.com/internet-marketing/user-engagement/landing-page-optimization",
+            "webmetro.com/internet-marketing/user-engagement/prospect-cultivation",
+            "webmetro.com/internet-marketing/user-engagement/social-media-marketing",
+            "webmetro.com/internet-marketing/user-engagement/website-design",
+            "webmetro.com/our-work",
+            "webmetro.com/our-work/case-studies",
+            "webmetro.com/our-work/clients",
+            "webmetro.com/our-work/clients/testimonials",
+            "webmetro.com/our-work/insights",
+            "webmetro.com/our-work/insights/povs",
+            "webmetro.com/our-work/insights/tips-and-advice",
+            "webmetro.com/our-work/insights/tips-and-advice/2008/05/12",
+            "webmetro.com/our-work/insights/tips-and-advice/2008/05/13/when-should-your-business-consider-an-seo-audit",
+            "webmetro.com/our-work/insights/white-papers",
+            "webmetro.com/privacypolicy.html",
+            "webmetro.com/who-we-are",
+            "webmetro.com/who-we-are/accreditations",
+            "webmetro.com/who-we-are/accreditations.html",
+            "webmetro.com/who-we-are/careers",
+            "webmetro.com/who-we-are/leadership",
+            "webmetro.com/who-we-are/leadership.html",
+            "webmetro.com/who-we-are/press-releases"
+        ]
+    },
+    {
+        "name": "webmetro.com/our-work/insights/tips-and-advice/2008/10/10/top-10-tips-for-b2b-search-engine-marketing",
+        "imports": [
+            "webmetro.com",
+            "webmetro.com/contact",
+            "webmetro.com/contact/events",
+            "webmetro.com/contact/events.html",
+            "webmetro.com/contact/request-consultation",
+            "webmetro.com/contact/request-consultation.html",
+            "webmetro.com/contact-us.html",
+            "webmetro.com/index",
+            "webmetro.com/internet-marketing",
+            "webmetro.com/internet-marketing/online-media",
+            "webmetro.com/internet-marketing/online-media/affiliate-marketing",
+            "webmetro.com/internet-marketing/online-media/display-advertising",
+            "webmetro.com/internet-marketing/online-media/email-marketing",
+            "webmetro.com/internet-marketing/online-media/social-advertising",
+            "webmetro.com/internet-marketing/online-media/video-marketing",
+            "webmetro.com/internet-marketing/search-marketing",
+            "webmetro.com/internet-marketing/search-marketing/comparison-search",
+            "webmetro.com/internet-marketing/search-marketing/content-marketing",
+            "webmetro.com/internet-marketing/search-marketing/mobile-search",
+            "webmetro.com/internet-marketing/search-marketing/pay-per-click-ppc",
+            "webmetro.com/internet-marketing/search-marketing/seo",
+            "webmetro.com/internet-marketing/user-engagement",
+            "webmetro.com/internet-marketing/user-engagement/conversion-rate-optimization",
+            "webmetro.com/internet-marketing/user-engagement/landing-page-optimization",
+            "webmetro.com/internet-marketing/user-engagement/prospect-cultivation",
+            "webmetro.com/internet-marketing/user-engagement/social-media-marketing",
+            "webmetro.com/internet-marketing/user-engagement/website-design",
+            "webmetro.com/our-work",
+            "webmetro.com/our-work/case-studies",
+            "webmetro.com/our-work/clients",
+            "webmetro.com/our-work/clients/testimonials",
+            "webmetro.com/our-work/insights",
+            "webmetro.com/our-work/insights/povs",
+            "webmetro.com/our-work/insights/tips-and-advice",
+            "webmetro.com/our-work/insights/tips-and-advice/2007/11/27/understanding-latent-semantic-indexing-in-seo",
+            "webmetro.com/our-work/insights/tips-and-advice/2008/02/04/the-path-to-good-design-is-proper-analytics",
+            "webmetro.com/our-work/insights/tips-and-advice/2008/05/13/when-should-your-business-consider-an-seo-audit",
+            "webmetro.com/our-work/insights/tips-and-advice/2008/07/11/inside-scoop-on-google-analytics-funnel-visualization-report",
+            "webmetro.com/our-work/insights/tips-and-advice/2008/10/03/beginning-your-google-analytics-analysis",
+            "webmetro.com/our-work/insights/tips-and-advice/2008/10/10",
+            "webmetro.com/our-work/insights/white-papers",
+            "webmetro.com/privacypolicy.html",
+            "webmetro.com/who-we-are",
+            "webmetro.com/who-we-are/accreditations",
+            "webmetro.com/who-we-are/accreditations.html",
+            "webmetro.com/who-we-are/careers",
+            "webmetro.com/who-we-are/leadership",
+            "webmetro.com/who-we-are/leadership.html",
+            "webmetro.com/who-we-are/press-releases"
+        ]
+    },
+    {
+        "name": "webmetro.com/pay-per-click-ppc",
+        "imports": [
+            "webmetro.com/internet-marketing/search-marketing/pay-per-click-ppc.html"
+        ]
+    },
+    {
+        "name": "webmetro.com/privacypolicy.htm",
+        "imports": [
+            "webmetro.com/privacypolicy.html"
+        ]
+    },
+    {
+        "name": "webmetro.com/privacypolicy.html",
+        "imports": [
+            "webmetro.com",
+            "webmetro.com/contact",
+            "webmetro.com/contact/events",
+            "webmetro.com/contact/events.html",
+            "webmetro.com/contact/request-consultation",
+            "webmetro.com/contact/request-consultation.html",
+            "webmetro.com/contact-us.html",
+            "webmetro.com/index",
+            "webmetro.com/internet-marketing",
+            "webmetro.com/internet-marketing/online-media",
+            "webmetro.com/internet-marketing/online-media/affiliate-marketing",
+            "webmetro.com/internet-marketing/online-media/display-advertising",
+            "webmetro.com/internet-marketing/online-media/email-marketing",
+            "webmetro.com/internet-marketing/online-media/social-advertising",
+            "webmetro.com/internet-marketing/online-media/video-marketing",
+            "webmetro.com/internet-marketing/search-marketing",
+            "webmetro.com/internet-marketing/search-marketing/comparison-search",
+            "webmetro.com/internet-marketing/search-marketing/content-marketing",
+            "webmetro.com/internet-marketing/search-marketing/mobile-search",
+            "webmetro.com/internet-marketing/search-marketing/pay-per-click-ppc",
+            "webmetro.com/internet-marketing/search-marketing/seo",
+            "webmetro.com/internet-marketing/user-engagement",
+            "webmetro.com/internet-marketing/user-engagement/conversion-rate-optimization",
+            "webmetro.com/internet-marketing/user-engagement/landing-page-optimization",
+            "webmetro.com/internet-marketing/user-engagement/prospect-cultivation",
+            "webmetro.com/internet-marketing/user-engagement/social-media-marketing",
+            "webmetro.com/internet-marketing/user-engagement/website-design",
+            "webmetro.com/our-work",
+            "webmetro.com/our-work/case-studies",
+            "webmetro.com/our-work/clients",
+            "webmetro.com/our-work/clients/testimonials",
+            "webmetro.com/our-work/insights",
+            "webmetro.com/our-work/insights/povs",
+            "webmetro.com/our-work/insights/tips-and-advice",
+            "webmetro.com/our-work/insights/white-papers",
+            "webmetro.com/who-we-are",
+            "webmetro.com/who-we-are/accreditations",
+            "webmetro.com/who-we-are/accreditations.html",
+            "webmetro.com/who-we-are/careers",
+            "webmetro.com/who-we-are/leadership",
+            "webmetro.com/who-we-are/leadership.html",
+            "webmetro.com/who-we-are/press-releases"
+        ]
+    },
+    {
+        "name": "webmetro.com/promotion.htm",
+        "imports": [
+            "webmetro.com"
+        ]
+    },
+    {
+        "name": "webmetro.com/resources/tools/Link-popularity.aspx",
+        "imports": [
+            "webmetro.com/our-work/insights/tips-and-advice/2008/05/12/is-your-website-seo-ready"
+        ]
+    },
+    {
+        "name": "webmetro.com/resources/tools/meta-tags.aspx",
+        "imports": [
+            "webmetro.com/our-work/insights"
+        ]
+    },
+    {
+        "name": "webmetro.com/resources/tools/search-saturation.aspx",
+        "imports": [
+            "webmetro.com/our-work/insights"
+        ]
+    },
+    {
+        "name": "webmetro.com/seo.htm",
+        "imports": [
+            "webmetro.com/internet-marketing/search-marketing/seo.html"
+        ]
+    },
+    {
+        "name": "webmetro.com/vmarketing.htm",
+        "imports": [
+            "webmetro.com/internet-marketing/online-media/video-marketing.html"
+        ]
+    },
+    {
+        "name": "webmetro.com/who-we-are",
+        "imports": [
+            "webmetro.com",
+            "webmetro.com/contact",
+            "webmetro.com/contact/events",
+            "webmetro.com/contact/events.html",
+            "webmetro.com/contact/request-consultation",
+            "webmetro.com/contact/request-consultation.html",
+            "webmetro.com/contact-us.html",
+            "webmetro.com/index",
+            "webmetro.com/internet-marketing",
+            "webmetro.com/internet-marketing/online-media",
+            "webmetro.com/internet-marketing/online-media/affiliate-marketing",
+            "webmetro.com/internet-marketing/online-media/display-advertising",
+            "webmetro.com/internet-marketing/online-media/email-marketing",
+            "webmetro.com/internet-marketing/online-media/social-advertising",
+            "webmetro.com/internet-marketing/online-media/video-marketing",
+            "webmetro.com/internet-marketing/search-marketing",
+            "webmetro.com/internet-marketing/search-marketing/comparison-search",
+            "webmetro.com/internet-marketing/search-marketing/content-marketing",
+            "webmetro.com/internet-marketing/search-marketing/mobile-search",
+            "webmetro.com/internet-marketing/search-marketing/pay-per-click-ppc",
+            "webmetro.com/internet-marketing/search-marketing/seo",
+            "webmetro.com/internet-marketing/user-engagement",
+            "webmetro.com/internet-marketing/user-engagement/conversion-rate-optimization",
+            "webmetro.com/internet-marketing/user-engagement/landing-page-optimization",
+            "webmetro.com/internet-marketing/user-engagement/prospect-cultivation",
+            "webmetro.com/internet-marketing/user-engagement/social-media-marketing",
+            "webmetro.com/internet-marketing/user-engagement/website-design",
+            "webmetro.com/our-work",
+            "webmetro.com/our-work/case-studies",
+            "webmetro.com/our-work/clients",
+            "webmetro.com/our-work/clients/testimonials",
+            "webmetro.com/our-work/insights",
+            "webmetro.com/our-work/insights/povs",
+            "webmetro.com/our-work/insights/tips-and-advice",
+            "webmetro.com/our-work/insights/white-papers",
+            "webmetro.com/privacypolicy.html",
+            "webmetro.com/who-we-are/accreditations",
+            "webmetro.com/who-we-are/accreditations.html",
+            "webmetro.com/who-we-are/careers",
+            "webmetro.com/who-we-are/leadership",
+            "webmetro.com/who-we-are/leadership.html",
+            "webmetro.com/who-we-are/press-releases"
+        ]
+    },
+    {
+        "name": "webmetro.com/who-we-are/careers",
+        "imports": [
+            "webmetro.com",
+            "webmetro.com/contact",
+            "webmetro.com/contact/events",
+            "webmetro.com/contact/events.html",
+            "webmetro.com/contact/request-consultation",
+            "webmetro.com/contact/request-consultation.html",
+            "webmetro.com/contact-us.html",
+            "webmetro.com/index",
+            "webmetro.com/internet-marketing",
+            "webmetro.com/internet-marketing/online-media",
+            "webmetro.com/internet-marketing/online-media/affiliate-marketing",
+            "webmetro.com/internet-marketing/online-media/display-advertising",
+            "webmetro.com/internet-marketing/online-media/email-marketing",
+            "webmetro.com/internet-marketing/online-media/social-advertising",
+            "webmetro.com/internet-marketing/online-media/video-marketing",
+            "webmetro.com/internet-marketing/search-marketing",
+            "webmetro.com/internet-marketing/search-marketing/comparison-search",
+            "webmetro.com/internet-marketing/search-marketing/content-marketing",
+            "webmetro.com/internet-marketing/search-marketing/mobile-search",
+            "webmetro.com/internet-marketing/search-marketing/pay-per-click-ppc",
+            "webmetro.com/internet-marketing/search-marketing/seo",
+            "webmetro.com/internet-marketing/user-engagement",
+            "webmetro.com/internet-marketing/user-engagement/conversion-rate-optimization",
+            "webmetro.com/internet-marketing/user-engagement/landing-page-optimization",
+            "webmetro.com/internet-marketing/user-engagement/prospect-cultivation",
+            "webmetro.com/internet-marketing/user-engagement/social-media-marketing",
+            "webmetro.com/internet-marketing/user-engagement/website-design",
+            "webmetro.com/our-work",
+            "webmetro.com/our-work/case-studies",
+            "webmetro.com/our-work/clients",
+            "webmetro.com/our-work/clients/testimonials",
+            "webmetro.com/our-work/insights",
+            "webmetro.com/our-work/insights/povs",
+            "webmetro.com/our-work/insights/tips-and-advice",
+            "webmetro.com/our-work/insights/white-papers",
+            "webmetro.com/privacypolicy.html",
+            "webmetro.com/who-we-are",
+            "webmetro.com/who-we-are/accreditations",
+            "webmetro.com/who-we-are/accreditations.html",
+            "webmetro.com/who-we-are/leadership",
+            "webmetro.com/who-we-are/leadership.html",
+            "webmetro.com/who-we-are/press-releases"
+        ]
+    },
+    {
+        "name": "webmetro.com/who-we-are/leadership.html",
+        "imports": [
+            "webmetro.com",
+            "webmetro.com/contact",
+            "webmetro.com/contact/events",
+            "webmetro.com/contact/events.html",
+            "webmetro.com/contact/request-consultation",
+            "webmetro.com/contact/request-consultation.html",
+            "webmetro.com/contact-us.html",
+            "webmetro.com/index",
+            "webmetro.com/internet-marketing",
+            "webmetro.com/internet-marketing/online-media",
+            "webmetro.com/internet-marketing/online-media/affiliate-marketing",
+            "webmetro.com/internet-marketing/online-media/display-advertising",
+            "webmetro.com/internet-marketing/online-media/email-marketing",
+            "webmetro.com/internet-marketing/online-media/social-advertising",
+            "webmetro.com/internet-marketing/online-media/video-marketing",
+            "webmetro.com/internet-marketing/search-marketing",
+            "webmetro.com/internet-marketing/search-marketing/comparison-search",
+            "webmetro.com/internet-marketing/search-marketing/content-marketing",
+            "webmetro.com/internet-marketing/search-marketing/mobile-search",
+            "webmetro.com/internet-marketing/search-marketing/pay-per-click-ppc",
+            "webmetro.com/internet-marketing/search-marketing/seo",
+            "webmetro.com/internet-marketing/user-engagement",
+            "webmetro.com/internet-marketing/user-engagement/conversion-rate-optimization",
+            "webmetro.com/internet-marketing/user-engagement/landing-page-optimization",
+            "webmetro.com/internet-marketing/user-engagement/prospect-cultivation",
+            "webmetro.com/internet-marketing/user-engagement/social-media-marketing",
+            "webmetro.com/internet-marketing/user-engagement/website-design",
+            "webmetro.com/our-work",
+            "webmetro.com/our-work/case-studies",
+            "webmetro.com/our-work/clients",
+            "webmetro.com/our-work/clients/testimonials",
+            "webmetro.com/our-work/insights",
+            "webmetro.com/our-work/insights/povs",
+            "webmetro.com/our-work/insights/tips-and-advice",
+            "webmetro.com/our-work/insights/white-papers",
+            "webmetro.com/privacypolicy.html",
+            "webmetro.com/who-we-are",
+            "webmetro.com/who-we-are/accreditations",
+            "webmetro.com/who-we-are/accreditations.html",
+            "webmetro.com/who-we-are/careers",
+            "webmetro.com/who-we-are/leadership",
+            "webmetro.com/who-we-are/press-releases"
+        ]
+    },
+    {
+        "name": "webmetro.com/who-we-are/press-releases/detail/!press-releases/2013/05/13/webmetro-named-by-ad-age-as-one-of-the-25-largest-u.s.-search-marketing-agencies",
+        "imports": [
+            "webmetro.com",
+            "webmetro.com/contact",
+            "webmetro.com/contact/events",
+            "webmetro.com/contact/events.html",
+            "webmetro.com/contact/request-consultation",
+            "webmetro.com/contact/request-consultation.html",
+            "webmetro.com/contact-us.html",
+            "webmetro.com/index",
+            "webmetro.com/internet-marketing",
+            "webmetro.com/internet-marketing/online-media",
+            "webmetro.com/internet-marketing/online-media/affiliate-marketing",
+            "webmetro.com/internet-marketing/online-media/display-advertising",
+            "webmetro.com/internet-marketing/online-media/email-marketing",
+            "webmetro.com/internet-marketing/online-media/social-advertising",
+            "webmetro.com/internet-marketing/online-media/video-marketing",
+            "webmetro.com/internet-marketing/search-marketing",
+            "webmetro.com/internet-marketing/search-marketing/comparison-search",
+            "webmetro.com/internet-marketing/search-marketing/content-marketing",
+            "webmetro.com/internet-marketing/search-marketing/mobile-search",
+            "webmetro.com/internet-marketing/search-marketing/pay-per-click-ppc",
+            "webmetro.com/internet-marketing/search-marketing/seo",
+            "webmetro.com/internet-marketing/user-engagement",
+            "webmetro.com/internet-marketing/user-engagement/conversion-rate-optimization",
+            "webmetro.com/internet-marketing/user-engagement/landing-page-optimization",
+            "webmetro.com/internet-marketing/user-engagement/prospect-cultivation",
+            "webmetro.com/internet-marketing/user-engagement/social-media-marketing",
+            "webmetro.com/internet-marketing/user-engagement/website-design",
+            "webmetro.com/our-work",
+            "webmetro.com/our-work/case-studies",
+            "webmetro.com/our-work/clients",
+            "webmetro.com/our-work/clients/testimonials",
+            "webmetro.com/our-work/insights",
+            "webmetro.com/our-work/insights/povs",
+            "webmetro.com/our-work/insights/tips-and-advice",
+            "webmetro.com/our-work/insights/white-papers",
+            "webmetro.com/privacypolicy.html",
+            "webmetro.com/who-we-are",
+            "webmetro.com/who-we-are/accreditations",
+            "webmetro.com/who-we-are/accreditations.html",
+            "webmetro.com/who-we-are/careers",
+            "webmetro.com/who-we-are/leadership",
+            "webmetro.com/who-we-are/leadership.html",
+            "webmetro.com/who-we-are/press-releases",
+            "webmetro.com/who-we-are/press-releases/detail/!press-releases/2013/05/13"
+        ]
+    },
+    {
+        "name": "webmetro.com/who-we-are/press-releases/detail/!press-releases/2013/07/30/webmetro-announces-agreement-to-be-acquired-by-teletech",
+        "imports": [
+            "webmetro.com",
+            "webmetro.com/contact",
+            "webmetro.com/contact/events",
+            "webmetro.com/contact/events.html",
+            "webmetro.com/contact/request-consultation",
+            "webmetro.com/contact/request-consultation.html",
+            "webmetro.com/contact-us.html",
+            "webmetro.com/index",
+            "webmetro.com/internet-marketing",
+            "webmetro.com/internet-marketing/online-media",
+            "webmetro.com/internet-marketing/online-media/affiliate-marketing",
+            "webmetro.com/internet-marketing/online-media/display-advertising",
+            "webmetro.com/internet-marketing/online-media/email-marketing",
+            "webmetro.com/internet-marketing/online-media/social-advertising",
+            "webmetro.com/internet-marketing/online-media/video-marketing",
+            "webmetro.com/internet-marketing/search-marketing",
+            "webmetro.com/internet-marketing/search-marketing/comparison-search",
+            "webmetro.com/internet-marketing/search-marketing/content-marketing",
+            "webmetro.com/internet-marketing/search-marketing/mobile-search",
+            "webmetro.com/internet-marketing/search-marketing/pay-per-click-ppc",
+            "webmetro.com/internet-marketing/search-marketing/seo",
+            "webmetro.com/internet-marketing/user-engagement",
+            "webmetro.com/internet-marketing/user-engagement/conversion-rate-optimization",
+            "webmetro.com/internet-marketing/user-engagement/landing-page-optimization",
+            "webmetro.com/internet-marketing/user-engagement/prospect-cultivation",
+            "webmetro.com/internet-marketing/user-engagement/social-media-marketing",
+            "webmetro.com/internet-marketing/user-engagement/website-design",
+            "webmetro.com/our-work",
+            "webmetro.com/our-work/case-studies",
+            "webmetro.com/our-work/clients",
+            "webmetro.com/our-work/clients/testimonials",
+            "webmetro.com/our-work/insights",
+            "webmetro.com/our-work/insights/povs",
+            "webmetro.com/our-work/insights/tips-and-advice",
+            "webmetro.com/our-work/insights/white-papers",
+            "webmetro.com/privacypolicy.html",
+            "webmetro.com/who-we-are",
+            "webmetro.com/who-we-are/accreditations",
+            "webmetro.com/who-we-are/accreditations.html",
+            "webmetro.com/who-we-are/careers",
+            "webmetro.com/who-we-are/leadership",
+            "webmetro.com/who-we-are/leadership.html",
+            "webmetro.com/who-we-are/press-releases",
+            "webmetro.com/who-we-are/press-releases/detail/!press-releases/2013/07/30"
+        ]
+    },
+    {
+        "name": "webmetro.com/who-we-are/press-releases/detail/2006/09/27/feedadvantage-a-big-advantage-for-shopping-portal-advertisers",
+        "imports": [
+            "webmetro.com",
+            "webmetro.com/contact",
+            "webmetro.com/contact/events",
+            "webmetro.com/contact/events.html",
+            "webmetro.com/contact/request-consultation",
+            "webmetro.com/contact/request-consultation.html",
+            "webmetro.com/contact-us.html",
+            "webmetro.com/index",
+            "webmetro.com/internet-marketing",
+            "webmetro.com/internet-marketing/online-media",
+            "webmetro.com/internet-marketing/online-media/affiliate-marketing",
+            "webmetro.com/internet-marketing/online-media/display-advertising",
+            "webmetro.com/internet-marketing/online-media/email-marketing",
+            "webmetro.com/internet-marketing/online-media/social-advertising",
+            "webmetro.com/internet-marketing/online-media/video-marketing",
+            "webmetro.com/internet-marketing/search-marketing",
+            "webmetro.com/internet-marketing/search-marketing/comparison-search",
+            "webmetro.com/internet-marketing/search-marketing/content-marketing",
+            "webmetro.com/internet-marketing/search-marketing/mobile-search",
+            "webmetro.com/internet-marketing/search-marketing/pay-per-click-ppc",
+            "webmetro.com/internet-marketing/search-marketing/seo",
+            "webmetro.com/internet-marketing/user-engagement",
+            "webmetro.com/internet-marketing/user-engagement/conversion-rate-optimization",
+            "webmetro.com/internet-marketing/user-engagement/landing-page-optimization",
+            "webmetro.com/internet-marketing/user-engagement/prospect-cultivation",
+            "webmetro.com/internet-marketing/user-engagement/social-media-marketing",
+            "webmetro.com/internet-marketing/user-engagement/website-design",
+            "webmetro.com/our-work",
+            "webmetro.com/our-work/case-studies",
+            "webmetro.com/our-work/clients",
+            "webmetro.com/our-work/clients/testimonials",
+            "webmetro.com/our-work/insights",
+            "webmetro.com/our-work/insights/povs",
+            "webmetro.com/our-work/insights/tips-and-advice",
+            "webmetro.com/our-work/insights/white-papers",
+            "webmetro.com/privacypolicy.html",
+            "webmetro.com/who-we-are",
+            "webmetro.com/who-we-are/accreditations",
+            "webmetro.com/who-we-are/accreditations.html",
+            "webmetro.com/who-we-are/careers",
+            "webmetro.com/who-we-are/leadership",
+            "webmetro.com/who-we-are/leadership.html",
+            "webmetro.com/who-we-are/press-releases",
+            "webmetro.com/who-we-are/press-releases/detail/2006/09/27"
+        ]
+    }
+];
+         
+        var diameter = 1000,
+       // var diameter = window.innerWidth,
+    radius = diameter / 2,
+    innerRadius = radius - 120;
+
+        var cluster = d3.layout.cluster()
+    .size([360, innerRadius])
+    .sort(null)
+    .value(function (d) { return d.size; });
+
+        var bundle = d3.layout.bundle();
+
+        var line = d3.svg.line.radial()
+    .interpolate("bundle")
+    .tension(.85)
+    .radius(function (d) { return d.y; })
+    .angle(function (d) { return d.x / 180 * Math.PI; });
+
+        var svg = d3.select("#chart").append("svg")
+    .attr("width", diameter)
+    .attr("height", diameter)
+  .append("g")
+    .attr("transform", "translate(" + radius + "," + radius + ")");
+
+        var link = svg.append("g").selectAll(".link"),
+    node = svg.append("g").selectAll(".node");
+
+        //d3.json(flaredata, function(error, classes) {
+        var nodes = cluster.nodes(packageHierarchy(flaredata));
+        var links = packageImports(nodes);
+
+        link = link
+      .data(bundle(links))
+    .enter().append("path")
+      .each(function (d) { d.source = d[0], d.target = d[d.length - 1]; })
+      .attr("class", "link")
+      .attr("d", line);
+
+        node = node
+      .data(nodes.filter(function (n) { return !n.children; }))
+    .enter().append("text")
+      .attr("class", "node")
+      .attr("dx", function (d) { return d.x < 180 ? 8 : -8; })
+      .attr("dy", ".31em")
+      .attr("transform", function (d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")" + (d.x < 180 ? "" : "rotate(180)"); })
+      .style("text-anchor", function (d) { return d.x < 180 ? "start" : "end"; })
+      .text(function (d) { return d.key; })
+      .on("mouseover", mouseovered)
+      .on("mouseout", mouseouted);
+        //});
+
+        function mouseovered(d) {
+            node
+      .each(function (n) { n.target = n.source = false; });
+
+            link
+      .classed("link--target", function (l) { if (l.target === d) return l.source.source = true; })
+      .classed("link--source", function (l) { if (l.source === d) return l.target.target = true; })
+    .filter(function (l) { return l.target === d || l.source === d; })
+      .each(function () { this.parentNode.appendChild(this); });
+
+            node
+      .classed("node--target", function (n) { return n.target; })
+      .classed("node--source", function (n) { return n.source; });
+        }
+
+        function mouseouted(d) {
+            link
+      .classed("link--target", false)
+      .classed("link--source", false);
+
+            node
+      .classed("node--target", false)
+      .classed("node--source", false);
+        }
+
+        d3.select(self.frameElement).style("height", diameter + "px");
+
+        // Lazily construct the package hierarchy from class names.
+        function packageHierarchy(classes) {
+            var map = {};
+
+            function find(name, data) {
+                var node = map[name], i;
+                if (!node) {
+                    node = map[name] = data || { name: name, children: [] };
+                    if (name.length) {
+                        i= name.lastIndexOf("/");
+                       // node.parent = find(name.substring(0, i = name)); //.lastIndexOf("/")
+                        if(i>-1)
+                        {
+                            node.parent=find(name.substring(0,i));
+                        node.parent.children.push(node);
+                        node.key = name.substring(i + 1);
+                        }
+                        else
+                            
+                        {
+                        node.parent=null;
+                        }
+                    }
+                }
+                return node;
+            }
+
+            classes.forEach(function (d) {
+                if(typeof d.children === 'undefined'){
+                    d.children=[];
+                }
+                find(d.name, d);
+            });
+
+            return map["webmetro.com"];
+        }
+
+        // Return a list of imports for the given array of nodes.
+        function packageImports(nodes) {
+            var map = {},
+      imports = [];
+
+            // Compute a map from name to node.
+            nodes.forEach(function (d) {
+                map[d.name] = d;
+            });
+
+            // For each import, construct a link from the source to target node.
+            nodes.forEach(function (d) {
+                if (d.imports) d.imports.forEach(function (i) {
+                    if(i in map){
+                    imports.push({ source: map[d.name], target: map[i] });
+                    }
+                });
+            });
+
+            return imports;
+        }
+
+</script>
+
+
+</body>
+</html>
